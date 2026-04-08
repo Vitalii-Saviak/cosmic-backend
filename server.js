@@ -222,12 +222,11 @@ function fallbackResponse(prompt) {
 // 4. ОСНОВНИЙ API ЕНДПОЇНТ
 // ============================================
 
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 30,
-  keyGenerator: (req) => req.body.userId || req.ip
-});
-
+// const limiter = rateLimit({
+//   windowMs: 60 * 1000,
+//   max: 30,
+//   keyGenerator: (req) => req.body.userId || req.ip,
+// });
 app.post('/api/astrology', async (req, res) => {
   const { userId, prompt, category, language, isPremium = false } = req.body;
   
