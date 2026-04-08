@@ -3,16 +3,28 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 5002;
+
+// Мідлвари
 app.use(cors());
 app.use(express.json());
 
-// Нумерологія - розрахунки
+// ➕ ТЕСТОВИЙ МАРШРУТ (щоб перевірити, що бекенд живий)
+app.get('/api/test', (req, res) => {
+  res.json({ success: true, message: '🚀 Бекенд Cosmic Companion працює!' });
+});
+
+// 🧮 НУМЕРОЛОГІЯ (розрахунки на основі дати)
 app.post('/api/numerology/calculate', (req, res) => {
   const { birth_date, full_name } = req.body;
-  
+
+  if (!birth_date) {
+    return res.status(400).json({ success: false, error: 'Дата народження обов\'язкова' });
+  }
+
   const lifePathNumber = calculateLifePathNumber(birth_date);
-  const destinyNumber = calculateDestinyNumber(full_name);
-  
+  const destinyNumber = full_name ? calculateDestinyNumber(full_name) : null;
+
   res.json({
     success: true,
     data: {
@@ -21,7 +33,7 @@ app.post('/api/numerology/calculate', (req, res) => {
         destiny_number: destinyNumber,
         report_data: {
           life_path_interpretation: getLifePathMeaning(lifePathNumber),
-          destiny_interpretation: getDestinyMeaning(destinyNumber),
+          destiny_interpretation: destinyNumber ? getDestinyMeaning(destinyNumber) : null,
           compatibility: "Гарна сумісність"
         }
       }
@@ -29,7 +41,7 @@ app.post('/api/numerology/calculate', (req, res) => {
   });
 });
 
-// Сумісність
+// 💑 СУМІСНІСТЬ (тестові дані)
 app.post('/api/matchmaking/analyze', (req, res) => {
   res.json({
     success: true,
@@ -44,12 +56,12 @@ app.post('/api/matchmaking/analyze', (req, res) => {
   });
 });
 
-// Функції розрахунків
+// 📌 Функції-помічники для розрахунків
 function calculateLifePathNumber(birthDate) {
   const digits = birthDate.replace(/-/g, '');
   let sum = 0;
   for (let char of digits) sum += parseInt(char);
-  while (sum > 9 && sum !== 11 && sum !== 22) {
+  while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
     sum = sum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
   }
   return sum;
@@ -67,14 +79,17 @@ function calculateDestinyNumber(name) {
 }
 
 function getLifePathMeaning(num) {
-  const meanings = { 1: "Лідер", 2: "Дипломат", 3: "Творець", 4: "Практик", 5: "Мандрівник", 6: "Опікун", 7: "Мудрець", 8: "Амбітний", 9: "Гуманіст", 11: "Просвітлений", 22: "Майстер" };
+  const meanings = { 1: "Лідер, інноватор", 2: "Дипломат, миротворець", 3: "Творець, оптиміст", 4: "Практик, будівничий", 5: "Мандрівник, дослідник", 6: "Опікун, відповідальний", 7: "Мудрець, аналітик", 8: "Амбітний, управлінець", 9: "Гуманіст, альтруїст", 11: "Просвітлений", 22: "Майстер-будівничий", 33: "Вчитель" };
   return meanings[num] || "Унікальний шлях";
 }
 
 function getDestinyMeaning(num) {
-  const meanings = { 1: "Шлях лідера", 2: "Шлях миру", 3: "Шлях творчості", 4: "Шлях стабільності", 5: "Шлях свободи", 6: "Шлях служіння", 7: "Шлях знань", 8: "Шлях успіху", 9: "Шлях завершення" };
+  const meanings = { 1: "Шлях лідера", 2: "Шлях миротворця", 3: "Шлях творця", 4: "Шлях стабільності", 5: "Шлях свободи", 6: "Шлях служіння", 7: "Шлях знань", 8: "Шлях успіху", 9: "Шлях завершення" };
   return meanings[num] || "Унікальний шлях";
 }
 
-const PORT = process.env.PORT || 5002;
-app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`🚀 Сервер запущено на порті ${PORT}`);
+  console.log(`📡 Перевірка: https://cosmic-backend-oskd.onrender.com/api/test`);
+});
