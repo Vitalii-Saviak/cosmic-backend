@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
+// const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
@@ -228,7 +228,7 @@ const limiter = rateLimit({
   keyGenerator: (req) => req.body.userId || req.ip
 });
 
-app.post('/api/astrology', limiter, async (req, res) => {
+app.post('/api/astrology', async (req, res) => {
   const { userId, prompt, category, language, isPremium = false } = req.body;
   
   if (!userId || !prompt) {
